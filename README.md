@@ -13,4 +13,4 @@ Tech Stack:
 - PyTorch
 
 Status:
-Working on embedding extraction. Next: adversarial cloaking.
+Working on embedding Compression-Resistant Perturbation. Next: Poisoning Feature injection
