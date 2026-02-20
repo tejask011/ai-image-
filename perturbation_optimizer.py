@@ -28,10 +28,15 @@ def optimize_perturbation(model, image_tensor, orig_emb, target_emb,
 
         grad = adv.grad
 
-        # small gaussian smoothing effect (reduces visible lines)
-        grad = torch.nn.functional.avg_pool2d(grad, kernel_size=3, stride=1, padding=1)
+        # ---- LOW FREQUENCY FILTER (important) ----
+        # remove sharp pixel noise (patches)
+        grad = torch.nn.functional.avg_pool2d(grad, 7, 1, 3)
 
-        adv = adv - alpha * grad.sign()
+        # normalize gradient strength
+        grad = grad / (grad.abs().mean() + 1e-8)
+
+        # smooth perturbation instead of pixel noise
+        adv = adv - alpha * grad
 
         perturb = torch.clamp(adv - image_tensor, -eps, eps)
         adv = torch.clamp(image_tensor + perturb, 0, 1).detach()
